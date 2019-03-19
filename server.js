@@ -25,7 +25,7 @@ const urlPairSchema = new Schema({
   'long' : String, 
   'short' : Number
 });
-var UrlPair = mongoose.model("UrlPair", urlPairSchema);
+var UrlPair = mongoose.model('UrlPair', urlPairSchema);
 
 /* Look for long url in the database. 
 If a document with the long url exists, 
@@ -39,7 +39,7 @@ function createAndSaveUrlPair (urlObject, done) {
     else { //create new entry
       UrlPair.estimatedDocumentCount((err, count) => {
         if (err) return done(err);
-        var pair = new UrlPair({"long": urlObject.long, "short": count});
+        var pair = new UrlPair({'long': urlObject.long, 'short': count});
         console.log('par exist', pair)
         pair.save((err, data) => {
           console.log('save did something')
@@ -61,7 +61,7 @@ function existingLongUrl(urlObject, done) {
 
 //find document by mini url
 function lookupMiniUrl(id, done) {
-  UrlPair.findOne({"short" : id}, (err, data) => err ? done(err) : done(null, data));
+  UrlPair.findOne({'short' : id}, (err, data) => err ? done(err) : done(null, data));
 }
 
 app.use(cors());
@@ -77,18 +77,18 @@ app.get('/', function(req, res){
 
   
 // your first API endpoint... 
-app.get("/api/hello", function (req, res) {
+app.get('/api/hello', function (req, res) {
   res.json({greeting: 'hello API'});
 });
 
-app.post("/api/shorturl/new", (req, res) => {
-  let body = "";  
+app.post('/api/shorturl/new', (req, res) => {
+  let body = '';  
   req.on('data', (d) => body += d);
   req.on('end', () => {
     body = decodeURIComponent(body.substr(4, body.length));
     let lookupStr = body.replace(/https?:\/\//, '');
     dns.lookup(lookupStr, (err, data) => {
-      if (err || body.match(/https?:\/\//) === null) res.json({'error': "invalid URL"});
+      if (err || body.match(/https?:\/\//) === null) res.json({'error': 'invalid URL'});
       else createAndSaveUrlPair({"long": body}, (err, data) => {
         if (err) {
           res.end('Error creating url pair.');
@@ -102,7 +102,7 @@ app.post("/api/shorturl/new", (req, res) => {
   }); //req.on('end')
 }); //POST "/api/shortcut/new"
 
-app.get("/api/shorturl/:url", (req, res) => {
+app.get('/api/shorturl/:url', (req, res) => {
   if (isNaN(req.params.url)) res.json({'error': 'wrong url format'});
   else lookupMiniUrl(parseInt(req.params.url), (err, data) => {
     if (err) res.json({'error': 'error looking up short url'});
@@ -114,5 +114,8 @@ app.get("/api/shorturl/:url", (req, res) => {
 app.listen(port, function () {
   console.log('Node.js listening ...');
 });
+
+
+
 
 
